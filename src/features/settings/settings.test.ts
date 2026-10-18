@@ -1,10 +1,10 @@
 import { PALETTE_VARIABLES, paletteFor } from "./palette";
+import { seasonFor } from "./seasons";
 import {
   AUDIO_FORMAT_KEY,
   getSettings,
   LANGUAGE_KEY,
   loadSettings,
-  SEASON_KEY,
   STYLE_KEY,
   THEME_KEY,
   updateSettings,
@@ -30,7 +30,6 @@ const DEFAULTS = {
   language: "system",
   theme: "system",
   style: "themed",
-  season: "auto",
   audioFormat: "best",
 };
 
@@ -74,19 +73,16 @@ describe("settings", () => {
     expect(loadSettings().audioFormat).toBe("best");
   });
 
-  it("keep the style and the season, the themed style and the date by default", () => {
+  it("keep the style, the themed one by default", () => {
     expect(getSettings().style).toBe("themed");
-    expect(getSettings().season).toBe("auto");
-    updateSettings({ style: "sober", season: "winter" });
+    updateSettings({ style: "sober" });
     expect(localStorage.getItem(STYLE_KEY)).toBe("sober");
-    expect(localStorage.getItem(SEASON_KEY)).toBe("winter");
-    expect(loadSettings()).toMatchObject({ style: "sober", season: "winter" });
+    expect(loadSettings()).toMatchObject({ style: "sober" });
   });
 
-  it("ignore a style or a season that does not exist", () => {
+  it("ignore a style that does not exist", () => {
     localStorage.setItem(STYLE_KEY, "neon");
-    localStorage.setItem(SEASON_KEY, "monsoon");
-    expect(loadSettings()).toMatchObject({ style: "themed", season: "auto" });
+    expect(loadSettings()).toMatchObject({ style: "themed" });
   });
 
   it("ignore an unknown stored value", () => {
@@ -151,10 +147,7 @@ describe("the look", () => {
   });
 
   it("the themed style puts the season's colours, its name and the style on <html>", () => {
-    applyAppearance(
-      settings({ style: "themed", season: "auto", theme: "light" }),
-      OCT,
-    );
+    applyAppearance(settings({ style: "themed", theme: "light" }), OCT);
     expect(root.dataset.style).toBe("themed");
     expect(root.dataset.season).toBe("autumn");
     for (const [name, value] of Object.entries(paletteFor("autumn", "light"))) {
@@ -164,32 +157,25 @@ describe("the look", () => {
   });
 
   it("dark mode takes the dark palette of the same season", () => {
-    applyAppearance(
-      settings({ style: "themed", season: "auto", theme: "dark" }),
-      OCT,
-    );
+    applyAppearance(settings({ style: "themed", theme: "dark" }), OCT);
     expect(isDarkNow()).toBe(true);
     expect(root.style.getPropertyValue("--background")).toBe(
       paletteFor("autumn", "dark")["--background"],
     );
   });
 
-  it("a season picked by hand wins over the date", () => {
-    applyAppearance(
-      settings({ style: "themed", season: "winter", theme: "light" }),
-      MAY,
-    );
-    expect(root.dataset.season).toBe("winter");
+  it("the season is always the one for the date", () => {
+    applyAppearance(settings({ style: "themed", theme: "light" }), MAY);
+    expect(root.dataset.season).toBe("spring");
+    applyAppearance(settings({ style: "themed", theme: "light" }), OCT);
+    expect(root.dataset.season).toBe("autumn");
     expect(root.style.getPropertyValue("--primary")).toBe(
-      paletteFor("winter", "light")["--primary"],
+      paletteFor("autumn", "light")["--primary"],
     );
   });
 
   it("the sober style takes all of it off again, and forgets it", () => {
-    applyAppearance(
-      settings({ style: "themed", season: "auto", theme: "light" }),
-      OCT,
-    );
+    applyAppearance(settings({ style: "themed", theme: "light" }), OCT);
     expect(localStorage.getItem(PALETTE_KEY)).not.toBeNull();
     applyAppearance(settings({ style: "sober", theme: "light" }), OCT);
     expect(root.dataset.style).toBeUndefined();
@@ -201,10 +187,7 @@ describe("the look", () => {
   });
 
   it("saves both palettes and the season for the page to paint with before it loads", () => {
-    applyAppearance(
-      settings({ style: "themed", season: "auto", theme: "dark" }),
-      MAY,
-    );
+    applyAppearance(settings({ style: "themed", theme: "dark" }), MAY);
     expect(JSON.parse(localStorage.getItem(PALETTE_KEY) as string)).toEqual({
       season: "spring",
       light: paletteFor("spring", "light"),
@@ -224,14 +207,12 @@ describe("the look", () => {
 
   it("follows the settings and the system once watched", () => {
     const setSystemDark = mockSystemTheme(false);
-    updateSettings({ theme: "system", style: "themed", season: "winter" });
+    updateSettings({ theme: "system", style: "themed" });
     watchTheme();
-    expect(root.dataset.season).toBe("winter");
+    expect(root.dataset.season).toBe(seasonFor(new Date()));
     const light = root.style.getPropertyValue("--background");
     setSystemDark(true);
     expect(root.style.getPropertyValue("--background")).not.toBe(light);
-    updateSettings({ season: "easter" });
-    expect(root.dataset.season).toBe("easter");
     updateSettings({ style: "sober" });
     expect(root.dataset.style).toBeUndefined();
   });

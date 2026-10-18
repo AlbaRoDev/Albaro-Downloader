@@ -8,21 +8,17 @@
 import { useSyncExternalStore } from "react";
 import type { AudioFormat } from "@/lib/ipc";
 import { AUDIO_FORMATS } from "../downloads/options";
-import { SEASONS, type Season } from "./seasons";
 
 export type LanguageChoice = "es" | "en" | "system";
 export type ThemeChoice = "light" | "dark" | "system";
 // The look: "sober" is the neutral one; "themed" is the author's website palette, which
-// changes with the season. Independent of light or dark.
+// changes with the season (always the one for the date). Independent of light or dark.
 export type StyleChoice = "sober" | "themed";
-export type SeasonChoice = "auto" | Season;
 
 export interface Settings {
   language: LanguageChoice;
   theme: ThemeChoice;
   style: StyleChoice;
-  // Which season the themed style shows: by the date, or one picked by hand.
-  season: SeasonChoice;
   // What the card starts with (and what the setting changes at once).
   audioFormat: AudioFormat;
 }
@@ -31,7 +27,6 @@ export interface Settings {
 export const LANGUAGE_KEY = "albaro.language";
 export const THEME_KEY = "albaro.theme";
 export const STYLE_KEY = "albaro.style";
-export const SEASON_KEY = "albaro.season";
 export const AUDIO_FORMAT_KEY = "albaro.audioFormat";
 
 function readRaw(key: string): string | null {
@@ -69,7 +64,6 @@ export function loadSettings(): Settings {
     language: read(LANGUAGE_KEY, ["es", "en", "system"], "system"),
     theme: read(THEME_KEY, ["light", "dark", "system"], "system"),
     style: read<StyleChoice>(STYLE_KEY, ["sober", "themed"], "themed"),
-    season: read<SeasonChoice>(SEASON_KEY, ["auto", ...SEASONS], "auto"),
     audioFormat: read(AUDIO_FORMAT_KEY, AUDIO_FORMATS, "best"),
   };
   return current;
@@ -85,7 +79,6 @@ export function updateSettings(change: Partial<Settings>) {
   if (change.language) write(LANGUAGE_KEY, change.language);
   if (change.theme) write(THEME_KEY, change.theme);
   if (change.style) write(STYLE_KEY, change.style);
-  if (change.season) write(SEASON_KEY, change.season);
   if (change.audioFormat) write(AUDIO_FORMAT_KEY, change.audioFormat);
   for (const listener of listeners) listener();
 }

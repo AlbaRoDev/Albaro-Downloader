@@ -3,7 +3,7 @@
 // plus `data-style` for the shapes and the display font. index.html replays the saved copy before
 // the first paint.
 import { PALETTE_VARIABLES, paletteFor } from "./palette";
-import { type Season, seasonFor } from "./seasons";
+import { seasonFor } from "./seasons";
 import {
   getSettings,
   type Settings,
@@ -28,11 +28,6 @@ export function isDark(theme: ThemeChoice): boolean {
 
 export function applyTheme(theme: ThemeChoice) {
   document.documentElement.classList.toggle("dark", isDark(theme));
-}
-
-// The season the themed style shows: the one picked, or the one for `now`.
-export function activeSeason(settings: Settings, now: Date): Season {
-  return settings.season === "auto" ? seasonFor(now) : settings.season;
 }
 
 function remember(value: object | null) {
@@ -60,7 +55,7 @@ export function applyAppearance(
     remember(null);
     return;
   }
-  const season = activeSeason(settings, now);
+  const season = seasonFor(now);
   root.dataset.style = "themed";
   root.dataset.season = season;
   const light = paletteFor(season, "light");
@@ -71,8 +66,8 @@ export function applyAppearance(
   remember({ season, light, dark: night });
 }
 
-// Applies the look now and keeps it applied: when the user changes the theme, the style or the
-// season, and when the system switches between light and dark (which only shows while the theme is
+// Applies the look now and keeps it applied: when the user changes the theme or the style,
+// and when the system switches between light and dark (which only shows while the theme is
 // "system"). Called once, before the first render. The date is read at start and on each change,
 // not on a timer: a season that turns while the app is open shows at the next start.
 export function watchTheme() {

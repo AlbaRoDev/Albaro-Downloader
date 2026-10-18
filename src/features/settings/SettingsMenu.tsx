@@ -16,8 +16,7 @@ import { folderName } from "@/features/downloads/FolderButton";
 import { AUDIO_FORMATS } from "@/features/downloads/options";
 import { useT } from "@/i18n";
 import { type AudioFormat, BROWSERS, type Browser } from "@/lib/ipc";
-import { SEASONS } from "./seasons";
-import { type SeasonChoice, updateSettings, useSettings } from "./settings";
+import { updateSettings, useSettings } from "./settings";
 import { isMac, modKey, withShortcut } from "./shortcuts";
 
 // The gear in the top bar: a small panel with the language and the theme, and the settings of
@@ -73,11 +72,11 @@ export function SettingsMenu() {
   );
 }
 
-// The style (sober or themed) and, in the themed one, which season it shows. Independent
-// of the light/dark choice above.
+// The style (sober or themed; the themed one follows the season of the year by itself).
+// Independent of the light/dark choice above.
 function Appearance() {
   const t = useT();
-  const { style, season } = useSettings();
+  const { style } = useSettings();
   return (
     <div className="flex flex-col gap-3">
       <Choice
@@ -90,22 +89,9 @@ function Appearance() {
         ]}
       />
       {style === "themed" && (
-        <>
-          <Field
-            label={t("settings.season")}
-            value={season}
-            options={[
-              { value: "auto", text: t("settings.seasonAuto") },
-              ...SEASONS.map((s) => ({ value: s, text: t(`season.${s}`) })),
-            ]}
-            onChange={(value) =>
-              updateSettings({ season: value as SeasonChoice })
-            }
-          />
-          <p className="text-muted-foreground text-xs">
-            {t("settings.styleHint")}
-          </p>
-        </>
+        <p className="text-muted-foreground text-xs">
+          {t("settings.styleHint")}
+        </p>
       )}
     </div>
   );

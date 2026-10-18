@@ -367,41 +367,24 @@ describe("the defaults of the card", () => {
   });
 });
 
-describe("the style and the season", () => {
+describe("the style", () => {
   const style = (name: string) => screen.getByRole("radio", { name });
 
-  it("offers sober and themed, themed being the default, with the season list under it", () => {
+  it("offers sober and themed, themed being the default, and has no season picker", () => {
     render(<SettingsMenu />);
     open();
     expect(style("Themed").getAttribute("data-state")).toBe("on");
     expect(style("Sober").getAttribute("data-state")).toBe("off");
-    expect(select("Season").value).toBe("auto");
-    expect(optionTexts("Season")).toEqual([
-      "Automatic",
-      "Spring",
-      "Summer",
-      "Summer (sun)",
-      "Autumn",
-      "Winter",
-      "Christmas",
-      "Halloween",
-      "Easter",
-      "Anniversary",
-    ]);
+    expect(screen.queryByRole("combobox", { name: "Season" })).toBeNull();
   });
 
-  it("picking a season is saved, and the sober style hides the season list", () => {
+  it("choosing the sober style is saved and hides the hint about the season", () => {
     render(<SettingsMenu />);
     open();
-    fireEvent.change(select("Season"), { target: { value: "halloween" } });
-    expect(localStorage.getItem("albaro.season")).toBe("halloween");
-    expect(document.documentElement.dataset.season).toBe(undefined);
+    expect(screen.getByText(/changes with the season/)).toBeTruthy();
     fireEvent.click(style("Sober"));
     expect(localStorage.getItem("albaro.style")).toBe("sober");
-    expect(screen.queryByRole("combobox", { name: "Season" })).toBeNull();
-    // Back to themed: the season is still the one picked.
-    fireEvent.click(style("Themed"));
-    expect(select("Season").value).toBe("halloween");
+    expect(screen.queryByText(/changes with the season/)).toBeNull();
   });
 
   it("is in Spanish too", () => {
@@ -410,6 +393,6 @@ describe("the style and the season", () => {
     fireEvent.click(screen.getByRole("button", { name: "Ajustes" }));
     expect(screen.getByRole("radio", { name: "Temático" })).toBeTruthy();
     expect(screen.getByRole("radio", { name: "Sobrio" })).toBeTruthy();
-    expect(optionTexts("Temporada")).toContain("Semana Santa");
+    expect(screen.queryByRole("combobox", { name: "Temporada" })).toBeNull();
   });
 });
