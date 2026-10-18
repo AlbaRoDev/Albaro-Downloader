@@ -18,6 +18,9 @@ yanked = "deny"
 ignore = [
   { id = "RUSTSEC-2024-0436", reason = "paste is unmaintained; compile-time macro, comes through Tauri" },
   { id = "RUSTSEC-2024-0370", reason = "proc-macro-error is unmaintained; compile-time macro, comes through Tauri and GTK" },
+  { id = "RUSTSEC-2026-0370", reason = "zvariant is unmaintained as a separate crate (merged into zbus 6); informational, comes through zbus 5 in tauri-plugin-notification and tauri-plugin-opener" },
+  { id = "RUSTSEC-2026-0371", reason = "zbus_names is unmaintained as a separate crate (merged into zbus 6); informational, same path as zvariant" },
+  { id = "RUSTSEC-2026-0372", reason = "zvariant_derive is unmaintained as a separate crate (merged into zbus 6); informational, same path as zvariant" },
   { id = "RUSTSEC-2024-0429", reason = "glib 0.18 unsound iterator; Linux only, comes through Tauri's GTK bindings, which this app does not call" },
 ]
 
