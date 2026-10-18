@@ -1,0 +1,29 @@
+# Node
+node_modules
+dist
+dist-ssr
+coverage
+*.tsbuildinfo
+*.log
+pnpm-debug.log*
+
+# Rust / Tauri (src-tauri/.gitignore covers target/ and gen/schemas)
+# Sidecar binaries are too big for git (ffmpeg > 100 MB); `pnpm sidecars` fetches them.
+src-tauri/binaries/
+
+# Secrets and local config
+.env
+.env.*
+*.local
+
+# Editors and OS
+.vscode/*
+!.vscode/extensions.json
+.idea
+.DS_Store
+Thumbs.db
+*.suo
+*.ntvs*
+*.njsproj
+*.sln
+*.sw?

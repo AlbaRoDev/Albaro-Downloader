@@ -1,0 +1,161 @@
+name: CI
+
+on:
+  push:
+    branches: [main, Pruebas]
+  pull_request:
+  # New advisories appear without any push: look again every week.
+  schedule:
+    - cron: "17 5 * * 1"
+
+# Cancel a run that a newer push to the same branch has made obsolete.
+concurrency:
+  group: ci-${{ github.ref }}
+  cancel-in-progress: true
+
+# Actions are pinned by commit hash (a tag can be moved, a hash cannot): the comment names the
+# version, and Dependabot (.github/dependabot.yml) proposes updates. Minimal token permissions.
+permissions:
+  contents: read
+
+# Windows and Linux. macOS is not built yet.
+env:
+  # What Tauri needs on Ubuntu 24.04: webkit and GTK for the window, appindicator for the tray.
+  LINUX_DEPS: >-
+    libwebkit2gtk-4.1-dev build-essential libxdo-dev libssl-dev
+    libayatana-appindicator3-dev librsvg2-dev patchelf
+
+jobs:
+  frontend:
+    runs-on: windows-latest
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
+      - uses: pnpm/action-setup@0977fd99725f1db4007ccb2928dbb4e90d06cc86 # v6
+        with:
+          version: 12.6.0 # keep in step with the pnpm used locally
+      - uses: actions/setup-node@949feb2413d6458794dcd2491c4babbbce0c15c1 # v7
+        with:
+          node-version: 24
+          cache: pnpm
+      - run: pnpm install --frozen-lockfile
+      - run: pnpm lint
+      - run: pnpm typecheck
+      - run: pnpm test
+
+  # Known vulnerabilities, licences and sources of the Rust crates and npm packages.
+  # A new advisory can fail this job without any change of ours: that is the point.
+  supply-chain:
+    runs-on: ubuntu-24.04
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
+      - uses: EmbarkStudios/cargo-deny-action@3c6349835b2b7b196a839186cb8b78e02f7b5f25 # v2
+        with:
+          manifest-path: src-tauri/Cargo.toml
+          command: check
+      - uses: pnpm/action-setup@0977fd99725f1db4007ccb2928dbb4e90d06cc86 # v6
+        with:
+          version: 12.6.0
+      - run: pnpm audit
+
+  # THIRD_PARTY_NOTICES.txt must match the dependencies: it is regenerated in memory,
+  # without the network, and compared. A dependency change that forgot `pnpm notices` fails here.
+  notices:
+    runs-on: ubuntu-24.04
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
+      - uses: pnpm/action-setup@0977fd99725f1db4007ccb2928dbb4e90d06cc86 # v6
+        with:
+          version: 12.6.0
+      - uses: actions/setup-node@949feb2413d6458794dcd2491c4babbbce0c15c1 # v7
+        with:
+          node-version: 24
+          cache: pnpm
+      - run: pnpm install --frozen-lockfile
+      - run: pnpm notices:check
+
+  rust:
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [windows-latest, ubuntu-24.04]
+    runs-on: ${{ matrix.os }}
+    defaults:
+      run:
+        working-directory: src-tauri
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
+      - if: runner.os == 'Linux'
+        run: sudo apt-get update && sudo apt-get install -y $LINUX_DEPS
+        working-directory: .
+      - uses: actions/setup-node@949feb2413d6458794dcd2491c4babbbce0c15c1 # v7, only to run the sidecar script, which has no dependencies
+        with:
+          node-version: 24
+      # tauri-build copies the sidecars while compiling, so cargo fails without them.
+      - run: node ../scripts/fetch-sidecars.mjs
+        env:
+          GITHUB_TOKEN: ${{ github.token }}
+      - uses: dtolnay/rust-toolchain@b725eda525362e7cf34af9a7243cac1e3f01a7ec # stable
+        with:
+          toolchain: stable
+          components: rustfmt, clippy
+      - uses: Swatinem/rust-cache@6323deb102c322ba6fcbdcafc7e3dddab59af2b6 # v2
+        with:
+          workspaces: src-tauri
+      - run: cargo fmt --check
+      - run: cargo clippy --all-targets -- -D warnings
+      - run: cargo test
+
+  # Builds the real installer of each system and reports its size. It does NOT upload the installers: each
+  # push would add ~600 MB of artifacts and the free Actions storage is 0.5 GB (the release workflow
+  # keeps the real ones).
+  bundle:
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - os: windows-latest
+            bundles: nsis
+          - os: ubuntu-24.04
+            bundles: deb,appimage
+    runs-on: ${{ matrix.os }}
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
+      - if: runner.os == 'Linux'
+        run: sudo apt-get update && sudo apt-get install -y $LINUX_DEPS
+      - uses: pnpm/action-setup@0977fd99725f1db4007ccb2928dbb4e90d06cc86 # v6
+        with:
+          version: 12.6.0
+      - uses: actions/setup-node@949feb2413d6458794dcd2491c4babbbce0c15c1 # v7
+        with:
+          node-version: 24
+          cache: pnpm
+      - run: pnpm install --frozen-lockfile
+      - run: pnpm sidecars
+        env:
+          GITHUB_TOKEN: ${{ github.token }}
+      - uses: dtolnay/rust-toolchain@b725eda525362e7cf34af9a7243cac1e3f01a7ec # stable
+        with:
+          toolchain: stable
+      - uses: Swatinem/rust-cache@6323deb102c322ba6fcbdcafc7e3dddab59af2b6 # v2
+        with:
+          workspaces: src-tauri
+      - run: pnpm tauri build --bundles ${{ matrix.bundles }}
+      - name: Installer sizes
+        shell: bash
+        run: |
+          {
+            echo "### Installers (${{ matrix.os }})"
+            find src-tauri/target/release/bundle -type f \( -name '*.exe' -o -name '*.deb' -o -name '*.AppImage' \) \
+              -exec du -m {} + | sed 's/^/- /'
+          } | tee -a "$GITHUB_STEP_SUMMARY"
+      # The licences must travel with the app: look inside the installer.
+      - name: Installer carries the licences
+        shell: bash
+        run: |
+          if [ "$RUNNER_OS" = "Windows" ]; then
+            list=$(7z l src-tauri/target/release/bundle/nsis/*.exe)
+          else
+            list=$(dpkg-deb -c src-tauri/target/release/bundle/deb/*.deb)
+          fi
+          echo "$list" | grep -E "(^|[ /\\])LICENSE$" || { echo "LICENSE is not in the installer"; exit 1; }
+          echo "$list" | grep -E "THIRD_PARTY_NOTICES\.txt$" || { echo "THIRD_PARTY_NOTICES.txt is not in the installer"; exit 1; }

@@ -1,0 +1,2 @@
+# HAND-WRITTEN (not captured): rate limiting cannot be provoked on purpose. Same shape as the real 404 fixture (classify-http-404.stderr.txt) with a 429 status.
+ERROR: [youtube] jNQXAC9IVRw: Unable to download webpage: HTTP Error 429: Too Many Requests (caused by <HTTPError 429: Too Many Requests>)

@@ -1,0 +1,2 @@
+# HAND-WRITTEN (not captured): needs Chrome or Edge open with its cookie database locked. Text follows yt-dlp's cookie reader (CookieLoadError); the issue number is the one it prints.
+ERROR: Could not copy Chrome cookie database. See  https://github.com/yt-dlp/yt-dlp/issues/7271  for more info

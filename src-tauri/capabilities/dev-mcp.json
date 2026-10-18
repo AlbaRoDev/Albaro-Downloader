@@ -1,0 +1,8 @@
+{
+  "$schema": "../gen/schemas/desktop-schema.json",
+  "identifier": "dev-mcp",
+  "description": "Lets the webview report console and IPC activity to the dev-only MCP plugin",
+  "windows": ["main"],
+  "platforms": ["windows", "macOS"],
+  "permissions": ["mcp:default"]
+}

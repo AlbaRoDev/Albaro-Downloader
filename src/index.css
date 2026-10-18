@@ -1,0 +1,153 @@
+@import "tailwindcss";
+@import "tw-animate-css";
+/* The themed style's display font (OFL), bundled: the CSP allows fonts from the app only. */
+@import "@fontsource-variable/playfair-display/wght.css";
+
+/* Dark mode follows the `dark` class on <html> (set by features/settings/theme.ts, and by
+   index.html before the first paint), not the media query: the user can override the system. */
+@custom-variant dark (&:is(.dark *));
+
+/* The few custom variants the shadcn components use (from shadcn's own tailwind.css, which
+   comes with its CLI package; copied instead of depending on the whole CLI). */
+@custom-variant data-open {
+  &:where([data-state="open"]),
+  &:where([data-open]:not([data-open="false"])) {
+    @slot;
+  }
+}
+@custom-variant data-closed {
+  &:where([data-state="closed"]),
+  &:where([data-closed]:not([data-closed="false"])) {
+    @slot;
+  }
+}
+@custom-variant data-horizontal {
+  &:where([data-orientation="horizontal"]) {
+    @slot;
+  }
+}
+@custom-variant data-vertical {
+  &:where([data-orientation="vertical"]) {
+    @slot;
+  }
+}
+
+@theme inline {
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+  --color-popover: var(--popover);
+  --color-popover-foreground: var(--popover-foreground);
+  --color-primary: var(--primary);
+  --color-primary-foreground: var(--primary-foreground);
+  --color-secondary: var(--secondary);
+  --color-secondary-foreground: var(--secondary-foreground);
+  --color-muted: var(--muted);
+  --color-muted-foreground: var(--muted-foreground);
+  --color-accent: var(--accent);
+  --color-accent-foreground: var(--accent-foreground);
+  --color-destructive: var(--destructive);
+  --color-border: var(--border);
+  --color-input: var(--input);
+  --color-ring: var(--ring);
+  --radius-sm: calc(var(--radius) * 0.6);
+  --radius-md: calc(var(--radius) * 0.8);
+  --radius-lg: var(--radius);
+  --radius-xl: calc(var(--radius) * 1.4);
+}
+
+/* The app's single accent colour: a dawn orange ("alba" is Spanish for dawn). Only its hue
+   lives here; each theme sets the lightness and chroma that keep the text on it readable.
+   Change this one number to recolour the app. shadcn's `--accent` is something else: the
+   neutral hover background. */
+:root {
+  --brand-hue: 45;
+  --radius: 0.625rem;
+  color-scheme: light;
+
+  --background: oklch(0.99 0.002 var(--brand-hue));
+  --foreground: oklch(0.2 0.01 var(--brand-hue));
+  --popover: oklch(1 0 0);
+  --popover-foreground: var(--foreground);
+  --primary: oklch(0.57 0.19 var(--brand-hue));
+  --primary-foreground: oklch(0.99 0 0);
+  --secondary: oklch(0.96 0.004 var(--brand-hue));
+  --secondary-foreground: var(--foreground);
+  --muted: oklch(0.95 0.004 var(--brand-hue));
+  --muted-foreground: oklch(0.48 0.01 var(--brand-hue));
+  --accent: var(--muted);
+  --accent-foreground: var(--foreground);
+  --destructive: oklch(0.55 0.22 27);
+  --border: oklch(0.9 0.006 var(--brand-hue));
+  --input: var(--border);
+  --ring: oklch(0.57 0.19 var(--brand-hue));
+}
+
+.dark {
+  color-scheme: dark;
+
+  --background: oklch(0.17 0.006 var(--brand-hue));
+  --foreground: oklch(0.96 0.004 var(--brand-hue));
+  --popover: oklch(0.22 0.008 var(--brand-hue));
+  --popover-foreground: var(--foreground);
+  --primary: oklch(0.75 0.14 var(--brand-hue));
+  --primary-foreground: oklch(0.2 0.03 var(--brand-hue));
+  --secondary: oklch(0.26 0.008 var(--brand-hue));
+  --secondary-foreground: var(--foreground);
+  --muted: oklch(0.25 0.008 var(--brand-hue));
+  --muted-foreground: oklch(0.74 0.01 var(--brand-hue));
+  --accent: var(--muted);
+  --accent-foreground: var(--foreground);
+  --destructive: oklch(0.7 0.19 22);
+  --border: oklch(1 0 0 / 12%);
+  --input: oklch(1 0 0 / 16%);
+  --ring: oklch(0.75 0.14 var(--brand-hue));
+}
+
+/* The shapes and the display font. Sober keeps the rounded corners of the components and the
+   system font; the themed style makes buttons pills and gives a few titles a serif.
+   Written with `var()` fallbacks so a page without `data-style` is the sober one. */
+:root {
+  --radius-control: var(--radius);
+  --radius-control-sm: var(--radius-md);
+}
+:root[data-style="themed"] {
+  --radius-control: 9999px;
+  --radius-control-sm: 9999px;
+  --font-display:
+    "Playfair Display Variable", Georgia, "Times New Roman", serif;
+}
+/* The strip along the top of the window (themed style only): the season's colours as a gradient. */
+.season-strip {
+  display: none;
+}
+:root[data-style="themed"] .season-strip {
+  display: block;
+  height: 3px;
+  flex-shrink: 0;
+  background: var(--season-strip);
+}
+.font-display {
+  font-family: var(--font-display, inherit);
+}
+
+@layer base {
+  * {
+    @apply border-border outline-ring/50;
+  }
+  body {
+    @apply bg-background text-foreground antialiased;
+  }
+}
+
+/* Whoever asks the system for less motion gets none: the spinners stop and the pulsing bars hold
+   still (their text, "Processing…", says the same), and panels appear without sliding. */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  ::before,
+  ::after {
+    animation-duration: 0.01ms;
+    animation-iteration-count: 1;
+    transition-duration: 0.01ms;
+    scroll-behavior: auto;
+  }
+}

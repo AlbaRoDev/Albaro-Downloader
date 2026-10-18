@@ -1,0 +1,44 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link rel="icon" href="data:," />
+    <title>AlbaRo Downloader</title>
+    <script>
+      // Before the first paint, so a dark theme never flashes light. Same rule as
+      // src/features/settings/theme.ts, and the same key as settings.ts (THEME_KEY).
+      var theme = "system";
+      try {
+        theme = localStorage.getItem("albaro.theme") || "system";
+      } catch {}
+      if (
+        theme === "dark" ||
+        (theme !== "light" && matchMedia("(prefers-color-scheme: dark)").matches)
+      ) {
+        document.documentElement.classList.add("dark");
+      }
+      // The themed style's colours, saved by theme.ts (PALETTE_KEY) the last time the app ran: the
+      // season's palette for the mode just chosen, so it does not flash the sober colours.
+      // In a function, so its variables are not globals (`name`, at the top level, would be
+      // `window.name`, which the browser keeps between pages).
+      (() => {
+        var root = document.documentElement;
+        var saved = null;
+        try {
+          saved = JSON.parse(localStorage.getItem("albaro.palette") || "null");
+        } catch {}
+        if (!saved) return;
+        var colours = saved[root.classList.contains("dark") ? "dark" : "light"];
+        for (var key in colours) root.style.setProperty(key, colours[key]);
+        root.dataset.style = "themed";
+        root.dataset.season = saved.season;
+      })();
+    </script>
+  </head>
+
+  <body>
+    <div id="root"></div>
+    <script type="module" src="/src/main.tsx"></script>
+  </body>
+</html>

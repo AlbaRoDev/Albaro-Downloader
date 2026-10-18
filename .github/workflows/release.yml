@@ -1,0 +1,131 @@
+name: Release
+
+# Pushing a tag `vX.Y.Z` builds the installers, signs them for the app's updater, and leaves a
+# DRAFT release with them, `latest.json` and the SHA-256 hashes. Nothing is public until
+# someone reads the draft and presses "Publish": only then does the updater (releases/latest/download/
+# latest.json) see it.
+#
+# Before tagging: version in package.json, tauri.conf.json and Cargo.toml equal to the tag; `pnpm sidecars
+# --force && pnpm notices:refresh && pnpm notices` committed (this workflow checks both); CI green on the commit.
+on:
+  push:
+    tags: ["v[0-9]+.[0-9]+.[0-9]+"]
+
+permissions:
+  contents: read
+
+env:
+  LINUX_DEPS: >-
+    libwebkit2gtk-4.1-dev build-essential libxdo-dev libssl-dev
+    libayatana-appindicator3-dev librsvg2-dev patchelf
+
+jobs:
+  # The installers go straight to the draft release, not through workflow artifacts: the free artifact
+  # storage is 0.5 GB and one release is ~600 MB. Release assets do not count against it.
+  prepare:
+    runs-on: ubuntu-24.04
+    permissions:
+      contents: write
+    steps:
+      - name: Empty draft release
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          gh release create "$GITHUB_REF_NAME" --repo "$GITHUB_REPOSITORY" --verify-tag --draft \
+            --title "AlbaRo Downloader $GITHUB_REF_NAME" --notes "Building..."
+
+  build:
+    needs: prepare
+    permissions:
+      contents: write # only to upload to the draft; the signing key is in one step
+    strategy:
+      fail-fast: true
+      matrix:
+        include:
+          - os: windows-latest
+            bundles: nsis
+          - os: ubuntu-24.04
+            bundles: deb,appimage
+    runs-on: ${{ matrix.os }}
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
+      - name: The versions match the tag
+        shell: bash
+        run: |
+          want="${GITHUB_REF_NAME#v}"
+          for got in \
+            "$(node -p "require('./package.json').version")" \
+            "$(node -p "require('./src-tauri/tauri.conf.json').version")" \
+            "$(grep -m1 '^version' src-tauri/Cargo.toml | cut -d'"' -f2)"; do
+            [ "$got" = "$want" ] || { echo "tag $GITHUB_REF_NAME, but a version file says $got"; exit 1; }
+          done
+      - if: runner.os == 'Linux'
+        run: sudo apt-get update && sudo apt-get install -y $LINUX_DEPS
+      - uses: pnpm/action-setup@0977fd99725f1db4007ccb2928dbb4e90d06cc86 # v6
+        with:
+          version: 12.6.0
+      - uses: actions/setup-node@949feb2413d6458794dcd2491c4babbbce0c15c1 # v7
+        with:
+          node-version: 24
+          cache: pnpm
+      - run: pnpm install --frozen-lockfile
+      - run: pnpm sidecars
+        env:
+          GITHUB_TOKEN: ${{ github.token }}
+      # The sidecars are always the latest versions: their licences and versions in the notices must be
+      # the ones inside this installer. Checked once (the other system gets the same versions).
+      - name: The licence notices match the bundled programs
+        if: runner.os == 'Linux'
+        run: |
+          pnpm notices:refresh
+          pnpm notices
+          git diff --exit-code || { echo "Run 'pnpm notices:refresh && pnpm notices' and commit before tagging."; exit 1; }
+      - uses: dtolnay/rust-toolchain@b725eda525362e7cf34af9a7243cac1e3f01a7ec # stable
+        with:
+          toolchain: stable
+      - uses: Swatinem/rust-cache@6323deb102c322ba6fcbdcafc7e3dddab59af2b6 # v2
+        with:
+          workspaces: src-tauri
+      - run: pnpm tauri build --bundles ${{ matrix.bundles }}
+      # GitHub turns spaces in asset names into dots, so the name is fixed here, before it goes into latest.json.
+      # Each file is signed with the updater key and the version (`requireSignedVersion`). The
+      # key only exists in this step.
+      - name: Collect and sign the installers
+        shell: bash
+        env:
+          TAURI_SIGNING_PRIVATE_KEY: ${{ secrets.TAURI_SIGNING_PRIVATE_KEY }}
+          TAURI_SIGNING_PRIVATE_KEY_PASSWORD: ${{ secrets.TAURI_SIGNING_PRIVATE_KEY_PASSWORD }}
+        run: |
+          [ -n "$TAURI_SIGNING_PRIVATE_KEY" ] || { echo "the secret TAURI_SIGNING_PRIVATE_KEY is not set"; exit 1; }
+          mkdir release
+          for f in src-tauri/target/release/bundle/{nsis/*.exe,deb/*.deb,appimage/*.AppImage}; do
+            [ -f "$f" ] || continue
+            n=$(basename "$f")
+            cp "$f" "release/${n// /-}"
+          done
+          [ -n "$(ls release)" ] || { echo "no installer was built"; exit 1; }
+          for f in release/*; do
+            pnpm tauri signer sign --app-version "${GITHUB_REF_NAME#v}" "$f"
+          done
+          ls -l release
+      - name: Upload to the draft release
+        shell: bash
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: gh release upload "$GITHUB_REF_NAME" release/* --repo "$GITHUB_REPOSITORY"
+
+  draft:
+    needs: build
+    runs-on: ubuntu-24.04
+    permissions:
+      contents: write
+    env:
+      GH_TOKEN: ${{ github.token }}
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
+      - run: gh release download "$GITHUB_REF_NAME" --repo "$GITHUB_REPOSITORY" --dir release
+      - run: node scripts/release-manifest.mjs release "$GITHUB_REF_NAME" "$GITHUB_REPOSITORY"
+      - name: Add latest.json and the hashes
+        run: |
+          gh release upload "$GITHUB_REF_NAME" --repo "$GITHUB_REPOSITORY" release/latest.json release/SHA256SUMS
+          gh release edit "$GITHUB_REF_NAME" --repo "$GITHUB_REPOSITORY" --notes-file release/RELEASE_NOTES.md

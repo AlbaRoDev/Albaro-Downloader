@@ -1,0 +1,2 @@
+WARNING: skipping cookie file entry due to invalid length 1: 'hello, this is not a cookie file\n'
+ERROR: 'C:\\Users\\user\\AppData\\Local\\Temp\\cookies-test\\junk.txt' does not look like a Netscape format cookies file

@@ -1,0 +1,51 @@
+[package]
+name = "albaro-downloader"
+version = "0.1.0"
+description = "Video and audio downloader built on yt-dlp and FFmpeg"
+authors = ["AlbaRoDev"]
+license = "MIT"
+edition = "2021"
+
+# See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
+
+[lib]
+# The `_lib` suffix may seem redundant but it is necessary
+# to make the lib name unique and wouldn't conflict with the bin name.
+# This seems to be only an issue on Windows, see https://github.com/rust-lang/cargo/issues/8519
+name = "albaro_downloader_lib"
+crate-type = ["staticlib", "cdylib", "rlib"]
+
+[build-dependencies]
+tauri-build = { version = "2", features = [] }
+
+[dependencies]
+ring = "0.17"
+rusqlite = { version = "0.40.2", features = ["bundled"] }
+serde = { version = "1.0.229", features = ["derive"] }
+serde_json = "1.0.151"
+sha2 = "0.10.9"
+tauri = { version = "2", features = ["tray-icon"] }
+tauri-plugin-clipboard-manager = "2.4.1"
+tauri-plugin-dialog = "2"
+tauri-plugin-notification = "2.7.0"
+tauri-plugin-opener = "2.7.0"
+tauri-plugin-shell = "2.4.0"
+tauri-plugin-updater = { version = "2.14.0", default-features = false, features = ["rustls-tls", "system-proxy"] }
+ureq = "3.4.2"
+
+# The dev-only MCP plugin pulls in pipewire through its screenshot crate, which Linux CI would
+# need system libraries for. Only the machine it is used on (Windows, macOS) builds it.
+[target.'cfg(not(target_os = "linux"))'.dependencies]
+tauri-plugin-mcp = { git = "https://github.com/P3GLEG/tauri-plugin-mcp", rev = "c7d271a06469bdf4744bfdeadca7458a1f3d02e5", version = "0.3.1" }
+
+# Read the optimization guideline for more details: https://tauri.app/concept/size/#cargo-configuration
+[profile.release]
+codegen-units = 1
+lto = true
+opt-level = 3
+panic = "abort"
+strip = true
+
+[dev-dependencies]
+base64 = "0.22"
+minisign-verify = "0.3"

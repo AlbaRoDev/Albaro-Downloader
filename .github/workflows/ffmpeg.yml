@@ -1,0 +1,102 @@
+name: FFmpeg build
+
+# Builds the FFmpeg the app bundles (scripts/build-ffmpeg.sh). It builds when the recipe
+# changes or by hand; pushing a tag `ffmpeg-n<version>-albaro<N>` also publishes a release with the
+# result, which is what the app's CI downloads (scripts/fetch-sidecars.mjs).
+on:
+  workflow_dispatch:
+    inputs:
+      revision:
+        description: "Build revision (the N in albaro<N>) for a trial build"
+        default: "1"
+  push:
+    branches: [main, Pruebas]
+    paths:
+      - scripts/build-ffmpeg.sh
+      - scripts/smoke-ffmpeg.sh
+      - .github/workflows/ffmpeg.yml
+    tags: ["ffmpeg-n*"]
+
+permissions:
+  contents: read
+
+env:
+  # From the tag when there is one (ffmpeg-n9.0.2-albaro3 -> 3), else from the trial input.
+  BUILD_REVISION: ${{ startsWith(github.ref, 'refs/tags/') && github.ref_name || inputs.revision || '1' }}
+
+jobs:
+  build:
+    strategy:
+      fail-fast: false
+      matrix:
+        target: [windows, linux]
+    runs-on: ubuntu-24.04
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
+      - name: Build tools
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y build-essential nasm pkg-config xz-utils zip curl
+          if [ "${{ matrix.target }}" = windows ]; then sudo apt-get install -y mingw-w64; fi
+      - run: |
+          rev="${BUILD_REVISION##*albaro}"
+          BUILD_REVISION="$rev" bash scripts/build-ffmpeg.sh ${{ matrix.target }} out
+      - name: Smoke test (the Linux binary runs here; the Windows one in the next job)
+        if: matrix.target == 'linux'
+        run: bash scripts/smoke-ffmpeg.sh out/ffmpeg-*-linux64/bin
+      - uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7
+        with:
+          name: ffmpeg-${{ matrix.target }}
+          path: |
+            out/*.zip
+            out/*.tar.xz
+          if-no-files-found: error
+          retention-days: 1
+
+  smoke-windows:
+    needs: build
+    runs-on: windows-latest
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
+      - uses: actions/download-artifact@9000827ccba6bdab643e8b6fd33ac0654aef8333 # v8.0.2
+        with:
+          name: ffmpeg-windows
+          path: pkg
+      - name: Smoke test
+        shell: bash
+        run: |
+          cd pkg && 7z x -y ./*.zip >/dev/null && cd ..
+          bash scripts/smoke-ffmpeg.sh pkg/ffmpeg-*-win64/bin
+      - name: https works (Schannel)
+        shell: bash
+        run: |
+          # example.com answers 200 with HTML: TLS worked if FFmpeg reads it and only then fails to find a media format.
+          out=$(pkg/ffmpeg-*-win64/bin/ffmpeg.exe -hide_banner -i https://example.com/ 2>&1 || true)
+          echo "$out" | tail -3
+          echo "$out" | grep -q "Invalid data found when processing input" || { echo "TLS did not work"; exit 1; }
+
+  publish:
+    needs: [build, smoke-windows]
+    if: startsWith(github.ref, 'refs/tags/ffmpeg-n')
+    runs-on: ubuntu-24.04
+    permissions:
+      contents: write
+    steps:
+      - uses: actions/download-artifact@9000827ccba6bdab643e8b6fd33ac0654aef8333 # v8.0.2
+        with:
+          pattern: ffmpeg-*
+          path: assets
+          merge-multiple: true
+      - name: Release
+        env:
+          GH_TOKEN: ${{ github.token }}
+          REPO: ${{ github.repository }}
+        run: |
+          cd assets
+          sha256sum ffmpeg-* > SHA256SUMS
+          cat SHA256SUMS
+          tag=$(ls ffmpeg-*-win64.zip | sed 's/-win64\.zip$//')
+          [ "$tag" = "$GITHUB_REF_NAME" ] || { echo "the tag $GITHUB_REF_NAME does not match what was built ($tag)"; exit 1; }
+          gh release create "$tag" --repo "$REPO" --verify-tag --title "$tag" --prerelease \
+            --notes "FFmpeg for AlbaRo Downloader, built by scripts/build-ffmpeg.sh at commit $GITHUB_SHA. LGPL: FFmpeg with libmp3lame, libopus and zlib only. The archives hold BUILDINFO.txt (versions, SHA-256 of the sources, configure line) and the licences. The source of every component is the upstream tarball named there." \
+            ./*

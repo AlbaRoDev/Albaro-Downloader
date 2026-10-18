@@ -1,0 +1,6 @@
+# Force LF in the working tree on every OS: Biome and rustfmt expect it
+* text=auto eol=lf
+
+# Byte for byte as yt-dlp published them: the signature covers every byte.
+tests/fixtures/yt-dlp-*SUMS* -text
+tests/fixtures/app-update-fixture.bin* -text

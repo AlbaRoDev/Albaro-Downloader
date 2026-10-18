@@ -1,0 +1,57 @@
+# cargo-deny: known vulnerabilities, licences (no GPL, no LGPL as a requirement), crates
+# from anywhere but crates.io, and yanked versions. Run by the CI (`cargo deny check`).
+
+[graph]
+targets = [
+  "x86_64-pc-windows-msvc",
+  "x86_64-unknown-linux-gnu",
+  "aarch64-apple-darwin",
+]
+# Dev-only test bridge (debug builds, outside Linux); it declares no licence.
+exclude = ["tauri-plugin-mcp"]
+
+[advisories]
+version = 2
+yanked = "deny"
+# Unmaintained or unsound crates (warnings in `cargo audit`, no known vulnerability). All come through
+# Tauri's GTK and macro dependencies, which this app cannot replace: revisit when Tauri updates them.
+ignore = [
+  { id = "RUSTSEC-2024-0436", reason = "paste is unmaintained; compile-time macro, comes through Tauri" },
+  { id = "RUSTSEC-2024-0370", reason = "proc-macro-error is unmaintained; compile-time macro, comes through Tauri and GTK" },
+  { id = "RUSTSEC-2024-0429", reason = "glib 0.18 unsound iterator; Linux only, comes through Tauri's GTK bindings, which this app does not call" },
+]
+
+[licenses]
+version = 2
+confidence-threshold = 0.9
+# MPL-2.0 (file-level copyleft: selectors, cssparser) is fine as long as those crates are used as
+# they are. LGPL appears only inside an OR expression (r-efi: MIT OR Apache-2.0 OR LGPL), so it is
+# never the licence we rely on.
+allow = [
+  "0BSD",
+  "Apache-2.0",
+  "Apache-2.0 WITH LLVM-exception",
+  "BSD-2-Clause",
+  "BSD-3-Clause",
+  "BSL-1.0",
+  "CC0-1.0",
+  "CDLA-Permissive-2.0",
+  "ISC",
+  "MIT",
+  "MIT-0",
+  "MPL-2.0",
+  "NCSA",
+  "Unicode-3.0",
+  "Unlicense",
+  "Zlib",
+]
+
+[bans]
+# Several versions of one crate are normal in a tree this size (Tauri brings its own).
+multiple-versions = "allow"
+wildcards = "allow"
+
+[sources]
+unknown-registry = "deny"
+unknown-git = "deny"
+allow-git = ["https://github.com/P3GLEG/tauri-plugin-mcp"]

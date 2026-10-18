@@ -1,0 +1,1 @@
+ERROR: could not find firefox cookies database in 'C:\Users\user\AppData\Roaming\Mozilla\Firefox\Profiles', 'C:\Users\user\AppData\Local\Packages\Mozilla.Firefox_n80bbvh6b1yt2\LocalCache\Roaming\Mozilla\Firefox\Profiles'

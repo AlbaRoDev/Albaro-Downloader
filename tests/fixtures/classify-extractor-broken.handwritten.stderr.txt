@@ -1,0 +1,2 @@
+# HAND-WRITTEN (not captured): a broken extractor cannot be provoked. Text follows yt-dlp's RegexNotFoundError plus the bug-report suffix it appends to unexpected extractor errors.
+ERROR: [youtube] jNQXAC9IVRw: Unable to extract yt initial data; please report this issue on  https://github.com/yt-dlp/yt-dlp/issues?q= , filling out the appropriate issue template. Confirm you are on the latest version using  yt-dlp -U

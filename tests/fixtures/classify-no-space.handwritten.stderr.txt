@@ -1,0 +1,3 @@
+# HAND-WRITTEN (not captured): a full disk cannot be provoked safely. Text follows yt-dlp's HTTP downloader ("unable to write data: {err}") with the Windows/Python errno 28 message.
+WARNING: [youtube] jNQXAC9IVRw: Some formats may be missing
+ERROR: unable to write data: [Errno 28] No space left on device

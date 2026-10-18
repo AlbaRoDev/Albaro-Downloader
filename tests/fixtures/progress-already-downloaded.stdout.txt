@@ -1,0 +1,11 @@
+[soundcloud] Extracting URL: https://soundcloud.com/forss/flickermood
+[soundcloud] forss/flickermood: Downloading info JSON
+[soundcloud] 293: Downloading original download format info JSON
+[soundcloud] 293: Downloading hls_aac format info JSON
+[soundcloud] 293: Downloading hls_aac format info JSON
+[soundcloud] 293: Downloading hls_mp3 format info JSON
+[soundcloud] 293: Downloading http_mp3 format info JSON
+[soundcloud] 293: Checking thumbnail extension
+[info] 293: Downloading 1 format(s): hls_aac_160k
+[download] Flickermood [293].m4a has already been downloaded
+[albaro-progress] {"filename": "Flickermood [293].m4a", "status": "finished", "total_bytes": 4315797, "speed": null, "_speed_str": "Unknown B/s", "_total_bytes_str": "   4.12MiB", "_elapsed_str": " Unknown", "_percent": 100.0, "_percent_str": "100.0%", "_default_template": "100% of    4.12MiB"}

@@ -1,0 +1,13 @@
+{
+  "$schema": "../gen/schemas/desktop-schema.json",
+  "identifier": "default",
+  "description": "What the page may ask of Tauri itself, and nothing more: hear events (listen, unlisten), read and write clipboard text, and the taskbar progress. Not core:default, which also lets the page change the tray icon and menus, read paths and emit events.",
+  "windows": ["main"],
+  "permissions": [
+    "core:event:allow-listen",
+    "core:event:allow-unlisten",
+    "core:window:allow-set-progress-bar",
+    "clipboard-manager:allow-read-text",
+    "clipboard-manager:allow-write-text"
+  ]
+}

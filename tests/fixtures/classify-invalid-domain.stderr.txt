@@ -1,0 +1,1 @@
+ERROR: [generic] v: Unable to download webpage: HTTPSConnection(host='dominio-que-no-existe.invalid', port=443): Failed to resolve 'dominio-que-no-existe.invalid' ([Errno 11001] getaddrinfo failed) (caused by TransportError("HTTPSConnection(host='dominio-que-no-existe.invalid', port=443): Failed to resolve 'dominio-que-no-existe.invalid' ([Errno 11001] getaddrinfo failed)"))
