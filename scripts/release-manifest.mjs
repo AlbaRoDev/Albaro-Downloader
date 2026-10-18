@@ -14,9 +14,9 @@ import { fileURLToPath } from "node:url";
 // `{os}-{arch}`; a .deb install must not fall back to the AppImage (it would refuse it), so it
 // gets its own key.
 const PLATFORMS = [
-  [/_x64-setup\.exe$/, "windows-x86_64"],
-  [/_amd64\.AppImage$/, "linux-x86_64"],
-  [/_amd64\.deb$/, "linux-x86_64-deb"],
+  [/_windows-x64-setup\.exe$/, "windows-x86_64"],
+  [/_linux-amd64\.AppImage$/, "linux-x86_64"],
+  [/_linux-amd64\.deb$/, "linux-x86_64-deb"],
 ];
 
 /** `files`: [{ name, signature, sha256 }]. Pure: no disk, no clock. */

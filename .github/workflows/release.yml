@@ -87,7 +87,7 @@ jobs:
         with:
           workspaces: src-tauri
       - run: pnpm tauri build --bundles ${{ matrix.bundles }}
-      # GitHub turns spaces in asset names into dots, so the name is fixed here, before it goes into latest.json.
+      # GitHub turns spaces in asset names into dots, so the name is fixed here (and the system added), before it goes into latest.json.
       # Each file is signed with the updater key and the version (`requireSignedVersion`). The
       # key only exists in this step.
       - name: Collect and sign the installers
@@ -101,7 +101,11 @@ jobs:
           for f in src-tauri/target/release/bundle/{nsis/*.exe,deb/*.deb,appimage/*.AppImage}; do
             [ -f "$f" ] || continue
             n=$(basename "$f")
-            cp "$f" "release/${n// /-}"
+            n=${n// /-}
+            # The system goes in the name, so nobody has to guess which file is theirs.
+            n=${n/_x64-setup.exe/_windows-x64-setup.exe}
+            n=${n/_amd64./_linux-amd64.}
+            cp "$f" "release/$n"
           done
           [ -n "$(ls release)" ] || { echo "no installer was built"; exit 1; }
           for f in release/*; do
