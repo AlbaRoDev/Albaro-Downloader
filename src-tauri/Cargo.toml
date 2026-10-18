@@ -1,6 +1,6 @@
 [package]
 name = "albaro-downloader"
-version = "0.1.0"
+version = "0.2.0"
 description = "Video and audio downloader built on yt-dlp and FFmpeg"
 authors = ["AlbaRoDev"]
 license = "MIT"
