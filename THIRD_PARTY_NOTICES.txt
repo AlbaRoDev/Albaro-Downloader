@@ -12,7 +12,7 @@ linked into the application): yt-dlp, FFmpeg (with ffprobe) and Deno. The texts 
 the versions bundled when this file was generated (see scripts/refresh-notices.mjs).
 
 --------------------------------------------------------------------------------
-yt-dlp 2026.08.19 - Unlicense
+yt-dlp 2026.10.26 - Unlicense
 Source: https://github.com/yt-dlp/yt-dlp
 --------------------------------------------------------------------------------
 This is free and unencumbered software released into the public domain.
@@ -4738,7 +4738,7 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 THE SOFTWARE.
 
 --------------------------------------------------------------------------------
-Deno 2.9.7 - MIT
+Deno 2.9.8 - MIT
 Source: https://github.com/denoland/deno
 --------------------------------------------------------------------------------
 MIT License
