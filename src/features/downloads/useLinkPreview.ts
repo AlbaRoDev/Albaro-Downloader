@@ -6,9 +6,10 @@ import {
   fetchPlaylist,
   type Metadata,
   type Playlist,
+  pickLinksFile,
   readClipboardText,
 } from "@/lib/ipc";
-import { type LinkProblem, parseLink } from "./link";
+import { extractLinks, type LinkProblem, parseLink } from "./link";
 
 // Anything the preview can show as an error: a backend code, or a problem found before asking
 // it (a pasted text that is not a link).
@@ -39,9 +40,47 @@ function isEditable(target: EventTarget | null): boolean {
 // document's `paste` event, which needs no clipboard permission). Analysing takes 2-4 s and
 // cannot be cancelled in Rust, so a newer link simply wins: every request takes a number and
 // only the latest one may change the state.
+// ponytail: one yt-dlp run per link (2-4 s), so only the first DETAILS_LIMIT of a file get a
+// title and thumbnail, DETAILS_PARALLEL at a time. The rest keep their link as title. Raise the
+// limit (or read the rest as the list scrolls) if that falls short.
+const DETAILS_LIMIT = 50;
+const DETAILS_PARALLEL = 3;
+
 export function useLinkPreview() {
   const [state, setState] = useState<PreviewState>({ status: "idle" });
   const latest = useRef(0);
+
+  // Reads each link's metadata and puts it in its entry of the playlist on screen. A link that
+  // fails (or is itself a playlist) stays as it is. Stops when a newer request replaces this one.
+  const fillDetails = useCallback((request: number, urls: string[]) => {
+    let next = 0;
+    const worker = async () => {
+      while (next < urls.length && request === latest.current) {
+        const index = next++;
+        let metadata: Metadata;
+        try {
+          metadata = await fetchMetadata(urls[index]);
+        } catch {
+          continue;
+        }
+        if (request !== latest.current) return;
+        setState((previous) => {
+          if (previous.status !== "playlist") return previous;
+          const { title, thumbnail, duration, channel } = metadata;
+          const entries = previous.playlist.entries.map((entry, i) =>
+            i === index
+              ? { ...entry, title, thumbnail, duration, channel }
+              : entry,
+          );
+          return {
+            status: "playlist",
+            playlist: { ...previous.playlist, entries },
+          };
+        });
+      }
+    };
+    for (let i = 0; i < DETAILS_PARALLEL; i++) void worker();
+  }, []);
 
   const show = useCallback((text: string) => {
     const request = ++latest.current;
@@ -86,6 +125,45 @@ export function useLinkPreview() {
     show(text);
   }, [show]);
 
+  // A CSV or text file with links, shown as a playlist: the same picker, options and queueing.
+  // Cancelling the dialog changes nothing. The titles start as the links themselves; the first
+  // ones are then read in the background (`fillDetails`) to get title and thumbnail.
+  const importFile = useCallback(async () => {
+    let file: Awaited<ReturnType<typeof pickLinksFile>>;
+    try {
+      file = await pickLinksFile();
+    } catch (error) {
+      latest.current++;
+      const { code, message } = asAppError(error);
+      setState({ status: "error", problem: code, message });
+      return;
+    }
+    if (!file) return;
+    const request = ++latest.current;
+    const { urls, truncated } = extractLinks(file.text);
+    if (urls.length === 0) {
+      setState({ status: "error", problem: "noLinks" });
+      return;
+    }
+    setState({
+      status: "playlist",
+      playlist: {
+        title: file.name,
+        channel: null,
+        entries: urls.map((url) => ({
+          url,
+          title: url,
+          unavailable: null,
+          duration: null,
+          thumbnail: null,
+          channel: null,
+        })),
+        truncated,
+      },
+    });
+    fillDetails(request, urls.slice(0, DETAILS_LIMIT));
+  }, [fillDetails]);
+
   const dismiss = useCallback(() => {
     latest.current++;
     setState({ status: "idle" });
@@ -101,5 +179,5 @@ export function useLinkPreview() {
     return () => document.removeEventListener("paste", onPaste);
   }, [show]);
 
-  return { state, pasteFromClipboard, dismiss };
+  return { state, pasteFromClipboard, importFile, dismiss };
 }

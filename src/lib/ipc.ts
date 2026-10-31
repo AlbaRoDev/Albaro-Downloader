@@ -412,6 +412,18 @@ export function pickCookiesFile(): Promise<DownloadSettings> {
   return invoke("pick_cookies_file");
 }
 
+// Opens the system's file picker for a CSV or text file with links and resolves with its name
+// (no extension) and text, or null if the user cancelled. Rejects with `unknown` for a file that
+// cannot be read or is over 5 MB. Like the other pickers, the dialog and the reading are Rust's.
+export interface LinksFile {
+  name: string;
+  text: string;
+}
+
+export function pickLinksFile(): Promise<LinksFile | null> {
+  return invoke("pick_links_file");
+}
+
 // Where files go and how they are named. Mirrors `OutputSettings` and `NameTemplate`
 // in src-tauri/src/queue.rs and ytdlp/formats.rs. The frontend never sends a path: the folder is
 // picked by a native dialog opened from Rust, and what is saved comes back here.

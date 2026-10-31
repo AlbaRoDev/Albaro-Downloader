@@ -1,4 +1,10 @@
-import { ArrowLeft, ClipboardPaste, History, LoaderCircle } from "lucide-react";
+import {
+  ArrowLeft,
+  ClipboardPaste,
+  FileUp,
+  History,
+  LoaderCircle,
+} from "lucide-react";
 import { useEffect, useState } from "react";
 import { Button } from "@/components/ui/button";
 import { DownloadList } from "@/features/downloads/DownloadList";
@@ -88,6 +94,10 @@ export default function App() {
           )}
           {t("toolbar.pasteLink")}
         </Button>
+        <Button size="lg" variant="outline" onClick={preview.importFile}>
+          <FileUp />
+          {t("toolbar.importFile")}
+        </Button>
         {/* The destination folder is what gives way when the bar is short of room. */}
         <FolderButton />
         <GlobalProgress />
@@ -128,6 +138,8 @@ export default function App() {
           <div className="flex flex-col gap-4 p-4">
             {preview.state.status === "playlist" ? (
               <PlaylistPicker
+                // Another file replaces this one without a "loading" in between: start afresh.
+                key={`${preview.state.playlist.title}${preview.state.playlist.entries.length}`}
                 playlist={preview.state.playlist}
                 choice={choice}
                 onChoose={setChoice}

@@ -136,6 +136,7 @@ pub fn run() {
             commands::set_notifications,
             commands::set_ui_language,
             commands::pick_cookies_file,
+            commands::pick_links_file,
             commands::get_output_settings,
             commands::set_name_template,
             commands::pick_output_dir,

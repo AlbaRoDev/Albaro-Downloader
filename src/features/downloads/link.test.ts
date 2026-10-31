@@ -1,4 +1,9 @@
-import { formatDuration, parseLink } from "./link";
+import {
+  extractLinks,
+  formatDuration,
+  MAX_IMPORTED_LINKS,
+  parseLink,
+} from "./link";
 
 describe("parseLink", () => {
   it("accepts an http(s) link, trimmed, with its scheme in lowercase", () => {
@@ -69,5 +74,35 @@ describe("formatDuration", () => {
     [59.6, "1:00"],
   ])("%s s is %s", (seconds, text) => {
     expect(formatDuration(seconds)).toBe(text);
+  });
+});
+
+describe("extractLinks", () => {
+  it("finds the links of a CSV in any column, quoted or not, and drops repeats", () => {
+    const csv = [
+      "title,url,notes",
+      'One,https://a.example/v?id=1,"see, later"',
+      '"Two","https://b.example/v?id=2";x',
+      "https://a.example/v?id=1,again",
+      "ftp://c.example/x,not a link",
+    ].join("\r\n");
+    expect(extractLinks(csv)).toEqual({
+      urls: ["https://a.example/v?id=1", "https://b.example/v?id=2"],
+      truncated: false,
+    });
+  });
+
+  it("finds nothing in a text without links", () => {
+    expect(extractLinks("title,url\nOne,example.com").urls).toEqual([]);
+  });
+
+  it("stops at the maximum and says so", () => {
+    const text = Array.from(
+      { length: MAX_IMPORTED_LINKS + 1 },
+      (_, i) => `https://a.example/${i}`,
+    ).join("\n");
+    const { urls, truncated } = extractLinks(text);
+    expect(urls).toHaveLength(MAX_IMPORTED_LINKS);
+    expect(truncated).toBe(true);
   });
 });

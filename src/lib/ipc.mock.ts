@@ -271,6 +271,12 @@ export class QueueSimulator {
         return this.setCookiesBrowser(args.browser);
       case "pick_cookies_file":
         return this.pickCookiesFile();
+      case "pick_links_file":
+        // The native picker, played: a small CSV with a header and two columns.
+        return Promise.resolve({
+          name: "links",
+          text: "title,url\nOne,https://example.com/watch?v=one\nTwo,https://example.com/watch?v=two\n",
+        });
       case "get_output_settings":
         return this.output();
       case "set_name_template":

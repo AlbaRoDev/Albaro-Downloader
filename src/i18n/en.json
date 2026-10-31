@@ -1,5 +1,6 @@
 {
   "toolbar.pasteLink": "Paste link",
+  "toolbar.importFile": "Import file",
   "toolbar.history": "History",
   "toolbar.historyBack": "Back to downloads",
   "folder.label": "Folder",
@@ -189,6 +190,7 @@
   "error.unknown": "Something unexpected went wrong.",
   "error.clipboardEmpty": "The clipboard is empty or has no text.",
   "error.notLink": "The clipboard doesn't contain an http(s) link.",
+  "error.noLinks": "The file has no http(s) links.",
   "error.tooLong": "The copied text is too long to be a link.",
   "update.available": "A new version of AlbaRo Downloader is available: {version}.",
   "update.busy": "Finish or cancel your downloads to install it.",

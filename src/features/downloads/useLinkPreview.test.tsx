@@ -286,3 +286,68 @@ describe("Ctrl+V", () => {
     expect(calls).toEqual([]);
   });
 });
+
+describe("importFile", () => {
+  const pick = (file: { name: string; text: string } | null) =>
+    mockIPC((cmd) =>
+      cmd === "pick_links_file"
+        ? file
+        : Promise.reject({ code: "unavailable", message: "no details" }),
+    );
+
+  it("shows the links of the file as a playlist named after it", async () => {
+    pick({
+      name: "mine",
+      text: "t,url\nA,https://a.test/1\nB,https://a.test/2",
+    });
+    const { result } = renderHook(() => useLinkPreview());
+    await act(() => result.current.importFile());
+    expect(result.current.state).toMatchObject({
+      status: "playlist",
+      playlist: {
+        title: "mine",
+        entries: [{ url: "https://a.test/1" }, { url: "https://a.test/2" }],
+      },
+    });
+  });
+
+  it("fills in title and thumbnail of the entries in the background", async () => {
+    mockIPC(async (cmd, args) => {
+      if (cmd === "pick_links_file")
+        return { name: "mine", text: "https://a.test/1\nhttps://a.test/fail" };
+      const url = (args as { url: string }).url;
+      if (url.includes("fail")) throw { code: "unavailable", message: "gone" };
+      return { ...metadata(url), thumbnail: "https://i.test/t.jpg" };
+    });
+    const { result } = renderHook(() => useLinkPreview());
+    await act(() => result.current.importFile());
+    await advance(0);
+    expect(result.current.state).toMatchObject({
+      playlist: {
+        entries: [
+          {
+            title: "Title of https://a.test/1",
+            thumbnail: "https://i.test/t.jpg",
+          },
+          { title: "https://a.test/fail", thumbnail: null },
+        ],
+      },
+    });
+  });
+
+  it("reports a file with no links, and leaves the state alone if cancelled", async () => {
+    pick({ name: "empty", text: "nothing here" });
+    const { result } = renderHook(() => useLinkPreview());
+    await act(() => result.current.importFile());
+    expect(result.current.state).toEqual({
+      status: "error",
+      problem: "noLinks",
+    });
+    pick(null);
+    await act(() => result.current.importFile());
+    expect(result.current.state).toEqual({
+      status: "error",
+      problem: "noLinks",
+    });
+  });
+});

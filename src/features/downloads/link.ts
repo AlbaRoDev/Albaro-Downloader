@@ -3,7 +3,12 @@
 const MAX_LENGTH = 2048;
 
 // Why a pasted text is not a link we accept.
-export type LinkProblem = "clipboardEmpty" | "tooLong" | "notLink";
+export type LinkProblem =
+  | "clipboardEmpty"
+  | "tooLong"
+  | "notLink"
+  // An imported file with no link in it.
+  | "noLinks";
 
 export type ParsedLink =
   | { ok: true; url: string }
@@ -23,6 +28,29 @@ export function parseLink(text: string): ParsedLink {
   return {
     ok: true,
     url: scheme[0].toLowerCase() + url.slice(scheme[0].length),
+  };
+}
+
+// Most links taken from one file, like the most entries of a playlist.
+export const MAX_IMPORTED_LINKS = 5000;
+
+// The distinct http(s) links in a text, in order. Works on a CSV (any column, quoted or not), a
+// TSV or a plain list alike, because it looks for links, not for columns: a link ends at a space,
+// comma, semicolon or quote. Each one goes through `parseLink`. `truncated`: there were more than
+// MAX_IMPORTED_LINKS.
+export function extractLinks(text: string): {
+  urls: string[];
+  truncated: boolean;
+} {
+  const found = text.match(/https?:\/\/[^\s,;"'<>]+/gi) ?? [];
+  const urls = new Set<string>();
+  for (const raw of found) {
+    const link = parseLink(raw);
+    if (link.ok) urls.add(link.url);
+  }
+  return {
+    urls: [...urls].slice(0, MAX_IMPORTED_LINKS),
+    truncated: urls.size > MAX_IMPORTED_LINKS,
   };
 }
 

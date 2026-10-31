@@ -1,5 +1,6 @@
 {
   "toolbar.pasteLink": "Pegar enlace",
+  "toolbar.importFile": "Importar archivo",
   "toolbar.history": "Historial",
   "toolbar.historyBack": "Volver a las descargas",
   "folder.label": "Carpeta",
@@ -189,6 +190,7 @@
   "error.unknown": "Ha ocurrido un error inesperado.",
   "error.clipboardEmpty": "El portapapeles está vacío o no contiene texto.",
   "error.notLink": "El portapapeles no contiene un enlace http(s).",
+  "error.noLinks": "El archivo no contiene ningún enlace http(s).",
   "error.tooLong": "El texto copiado es demasiado largo para ser un enlace.",
   "update.available": "Hay una versión nueva de AlbaRo Downloader: {version}.",
   "update.busy": "Termina o cancela las descargas para poder instalarla.",

@@ -281,6 +281,59 @@ pub async fn pick_cookies_file(
     settings::download_settings(&db)
 }
 
+/// A text file with links (a CSV, one link per line...), as the picker read it.
+#[derive(serde::Serialize)]
+pub struct LinksFile {
+    /// The file's name without its extension: it names the group of downloads.
+    name: String,
+    text: String,
+}
+
+/// Biggest file we read: thousands of links fit many times over; a bigger one is not a list.
+const MAX_LINKS_FILE: u64 = 5 * 1024 * 1024;
+
+/// Opens the file picker for a list of links and returns its text, or `None` if the user
+/// cancelled. Reading happens here because the page never touches the file system; finding the
+/// links in the text is the page's job. Not UTF-8 (a CSV saved by Excel) is read lossily: the
+/// links are ASCII, only other columns suffer.
+#[tauri::command]
+pub async fn pick_links_file(
+    app: AppHandle,
+    window: WebviewWindow,
+) -> Result<Option<LinksFile>, AppError> {
+    tauri::async_runtime::spawn_blocking(move || {
+        let Some(file) = app
+            .dialog()
+            .file()
+            .set_parent(&window)
+            .add_filter("CSV / TXT", &["csv", "tsv", "txt"])
+            .blocking_pick_file()
+        else {
+            return Ok(None);
+        };
+        let unreadable =
+            |e: &dyn std::fmt::Display| AppError::Unknown(format!("cannot read the file: {e}"));
+        let path = file.into_path().map_err(|e| unreadable(&e))?;
+        let size = std::fs::metadata(&path).map_err(|e| unreadable(&e))?.len();
+        if size > MAX_LINKS_FILE {
+            return Err(AppError::Unknown(format!(
+                "the file is too big ({size} bytes)"
+            )));
+        }
+        let bytes = std::fs::read(&path).map_err(|e| unreadable(&e))?;
+        let name = path
+            .file_stem()
+            .map(|n| n.to_string_lossy().into_owned())
+            .unwrap_or_default();
+        Ok(Some(LinksFile {
+            name,
+            text: String::from_utf8_lossy(&bytes).into_owned(),
+        }))
+    })
+    .await
+    .map_err(|e| AppError::Unknown(format!("the file picker failed: {e}")))?
+}
+
 /// Title, duration, formats... of the video at `url`. Async, so the UI keeps responding
 /// while yt-dlp runs (it takes seconds).
 #[tauri::command]
