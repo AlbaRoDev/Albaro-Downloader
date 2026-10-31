@@ -11689,7 +11689,7 @@ SOFTWARE.
 
 ================================================================================
 
-clipboard-win 5.4.1, error-code 3.4.0
+clipboard-win 5.4.3, error-code 3.4.0
 --------------------------------------------------------------------------------
 Boost Software License - Version 1.0 - August 17th, 2003
 
@@ -38308,7 +38308,7 @@ DEALINGS IN THE SOFTWARE.
 
 ================================================================================
 
-rustls-webpki 0.103.15
+rustls-webpki 0.103.16
 --------------------------------------------------------------------------------
 Except as otherwise noted, this project is licensed under the following
 (ISC-style) terms:
@@ -39677,7 +39677,7 @@ THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLI
 
 ================================================================================
 
-webpki-roots 1.0.9
+webpki-roots 1.0.11
 --------------------------------------------------------------------------------
 # Community Data License Agreement - Permissive - Version 2.0
 
