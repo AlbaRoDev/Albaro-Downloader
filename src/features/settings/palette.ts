@@ -95,14 +95,6 @@ export const SEASON_COLOURS: Record<Season, SeasonColours> = {
     tintChroma: 0.022,
     strip: [295, 320, 90],
   },
-  // Pink.
-  anniversary: {
-    hue: 350,
-    chroma: 0.16,
-    tint: 20,
-    tintChroma: 0.018,
-    strip: [350, 330, 10],
-  },
 };
 
 export type Mode = "light" | "dark";

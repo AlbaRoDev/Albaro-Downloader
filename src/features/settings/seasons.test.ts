@@ -14,7 +14,7 @@ const CALENDAR: [number, number, Season][] = [
   [4, 6, "spring"],
   [5, 31, "spring"],
   [6, 1, "spring"],
-  [6, 2, "anniversary"],
+  [6, 2, "spring"],
   [6, 3, "spring"],
   [6, 21, "spring"],
   [6, 22, "summer"],

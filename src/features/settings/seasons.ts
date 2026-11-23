@@ -11,13 +11,11 @@ export const SEASONS = [
   "christmas",
   "halloween",
   "easter",
-  "anniversary",
 ] as const;
 
 export type Season = (typeof SEASONS)[number];
 
 // The season on `date`, in the date's own (local) calendar. The ranges are the website's:
-//  - anniversary: 2 June
 //  - Christmas: 15 December to 6 January
 //  - Halloween: 30 October to 1 November
 //  - Easter ("Semana Santa"): 29 March to 5 April
@@ -29,7 +27,6 @@ export function seasonFor(date: Date): Season {
   const month = date.getMonth(); // 0 is January
   const day = date.getDate();
 
-  if (month === 5 && day === 2) return "anniversary";
   if ((month === 11 && day >= 15) || (month === 0 && day <= 6)) {
     return "christmas";
   }
