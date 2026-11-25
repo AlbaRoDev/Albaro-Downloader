@@ -21,7 +21,7 @@ it("renders the layout: title, paste button, settings and empty list", () => {
   updateSettings({ language: "es" });
   render(<App />);
   expect(
-    screen.getByRole("heading", { name: "AlbaRo Downloader" }),
+    screen.getByRole("heading", { name: "Alvraco Downloader" }),
   ).toBeTruthy();
   expect(
     (screen.getByRole("button", { name: "Pegar enlace" }) as HTMLButtonElement)

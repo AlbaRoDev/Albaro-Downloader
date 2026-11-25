@@ -45,7 +45,7 @@ export function buildManifest({ tag, repo, files, notes, date }) {
 
 export function releaseNotes(tag, files) {
   const sums = files.map((f) => `${f.sha256}  ${f.name}`).join("\n");
-  return `## AlbaRo Downloader ${tag}
+  return `## Alvraco Downloader ${tag}
 
 **SHA-256** of the installers (\`Get-FileHash <file>\` in PowerShell, \`sha256sum <file>\` on Linux):
 
@@ -79,7 +79,7 @@ function main(dir, tag, repo) {
     tag,
     repo,
     files,
-    notes: `AlbaRo Downloader ${tag}`,
+    notes: `Alvraco Downloader ${tag}`,
     date: new Date(),
   });
   writeFileSync(

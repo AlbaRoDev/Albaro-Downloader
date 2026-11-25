@@ -117,8 +117,8 @@ pub fn idle_message(language: Language, summary: &Summary) -> Option<(String, St
 /// The tray menu's two entries: show the window, quit.
 pub fn tray_labels(language: Language) -> (&'static str, &'static str) {
     match language {
-        Language::Es => ("Mostrar AlbaRo Downloader", "Salir"),
-        Language::En => ("Show AlbaRo Downloader", "Quit"),
+        Language::Es => ("Mostrar Alvraco Downloader", "Salir"),
+        Language::En => ("Show Alvraco Downloader", "Quit"),
     }
 }
 
@@ -201,11 +201,11 @@ mod tests {
     fn the_tray_menu_follows_the_language() {
         assert_eq!(
             tray_labels(Language::En),
-            ("Show AlbaRo Downloader", "Quit")
+            ("Show Alvraco Downloader", "Quit")
         );
         assert_eq!(
             tray_labels(Language::Es),
-            ("Mostrar AlbaRo Downloader", "Salir")
+            ("Mostrar Alvraco Downloader", "Salir")
         );
     }
 }

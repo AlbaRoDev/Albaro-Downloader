@@ -182,7 +182,7 @@ mod tests {
         assert_eq!(endpoints.len(), 1);
         assert_eq!(
             endpoints[0],
-            "https://github.com/AlbaRoDev/Albaro-Downloader/releases/latest/download/latest.json"
+            "https://github.com/Alvraco/Alvraco-Downloader/releases/latest/download/latest.json"
         );
         for weakening in [
             "dangerousInsecureTransportProtocol",

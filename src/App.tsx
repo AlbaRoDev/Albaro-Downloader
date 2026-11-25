@@ -78,7 +78,7 @@ export default function App() {
   return (
     <div className="flex h-dvh flex-col">
       <div className="season-strip" aria-hidden />
-      <h1 className="sr-only">AlbaRo Downloader</h1>
+      <h1 className="sr-only">Alvraco Downloader</h1>
       <header className="relative flex items-center gap-3 border-b px-4 py-3">
         {/* Ctrl+V outside a text field does the same (useLinkPreview). It stays enabled while
             loading: a new link replaces the one being read. */}

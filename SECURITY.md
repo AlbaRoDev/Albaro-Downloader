@@ -1,6 +1,6 @@
 # Security policy
 
-AlbaRo Downloader is a personal, open-source project maintained by one person. Security reports are welcome and are
+Alvraco Downloader is a personal, open-source project maintained by one person. Security reports are welcome and are
 handled on a best-effort basis.
 
 ## Reporting a vulnerability
@@ -40,7 +40,7 @@ updates are signed, and cookies are never written to logs or error messages.
 
 # Política de seguridad
 
-AlbaRo Downloader es un proyecto personal de código abierto, mantenido por una persona. Los avisos de seguridad se
+Alvraco Downloader es un proyecto personal de código abierto, mantenido por una persona. Los avisos de seguridad se
 agradecen y se atienden lo mejor posible.
 
 **No abras una incidencia pública** por un problema de seguridad. Usa el aviso privado de GitHub: en el

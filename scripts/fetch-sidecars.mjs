@@ -25,7 +25,7 @@ const BINARIES_DIR = join(
   "binaries",
 );
 
-const FFMPEG_REPO = "AlbaRoDev/Albaro-Downloader";
+const FFMPEG_REPO = "Alvraco/Alvraco-Downloader";
 
 // ffmpeg is null where scripts/build-ffmpeg.sh does not build it (macOS is not built yet; ARM is not planned).
 // The script fails clearly for those targets.

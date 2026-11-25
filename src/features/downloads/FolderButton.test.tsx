@@ -42,8 +42,8 @@ describe("folderName", () => {
   it("is the last part of the path, with either separator", () => {
     expect(folderName("C:\\Users\\Ana\\Vídeos")).toBe("Vídeos");
     expect(folderName("/home/ana/Vídeos ñ/")).toBe("Vídeos ñ");
-    expect(folderName("D:\\Descargas\\AlbaRo Downloader")).toBe(
-      "AlbaRo Downloader",
+    expect(folderName("D:\\Descargas\\Alvraco Downloader")).toBe(
+      "Alvraco Downloader",
     );
   });
 
@@ -69,11 +69,11 @@ describe("the folder button", () => {
 
   it("reads in Spanish", () => {
     updateSettings({ language: "es" });
-    known("C:\\Descargas\\AlbaRo Downloader");
+    known("C:\\Descargas\\Alvraco Downloader");
     render(<FolderButton />);
     expect(
       screen.getByRole("button", {
-        name: "Carpeta de destino: C:\\Descargas\\AlbaRo Downloader. Pulsa para cambiarla.",
+        name: "Carpeta de destino: C:\\Descargas\\Alvraco Downloader. Pulsa para cambiarla.",
       }),
     ).toBeTruthy();
   });

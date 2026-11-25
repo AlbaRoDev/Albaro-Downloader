@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# Builds the FFmpeg (ffmpeg + ffprobe) that AlbaRo Downloader bundles.
+# Builds the FFmpeg (ffmpeg + ffprobe) that Alvraco Downloader bundles.
 #
 #   scripts/build-ffmpeg.sh windows|linux [output-dir]
 #
@@ -152,7 +152,7 @@ cp "$work/lame-$LAME_VERSION/COPYING" "$pkg/licenses/lame.COPYING"
 cp "$work/opus-$OPUS_VERSION/COPYING" "$pkg/licenses/opus.COPYING"
 cp "$work/zlib-$ZLIB_VERSION/LICENSE" "$pkg/licenses/zlib.LICENSE"
 {
-  echo "AlbaRo Downloader FFmpeg build (scripts/build-ffmpeg.sh, revision $REVISION)"
+  echo "Alvraco Downloader FFmpeg build (scripts/build-ffmpeg.sh, revision $REVISION)"
   echo "FFmpeg $FFMPEG_VERSION  sha256 $FFMPEG_SHA256"
   echo "lame $LAME_VERSION  sha256 $LAME_SHA256"
   echo "opus $OPUS_VERSION  sha256 $OPUS_SHA256"

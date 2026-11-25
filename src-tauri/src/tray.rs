@@ -30,7 +30,7 @@ pub fn create(app: &AppHandle, icon: Option<Image<'_>>) -> tauri::Result<()> {
         .menu(&menu)
         // The left click shows the window; the menu is for the right one.
         .show_menu_on_left_click(false)
-        .tooltip("AlbaRo Downloader")
+        .tooltip("Alvraco Downloader")
         .on_menu_event(|app, event| match event.id().as_ref() {
             "show" => show_window(app),
             "quit" => quit_app(app),

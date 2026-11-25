@@ -98,5 +98,5 @@ jobs:
           tag=$(ls ffmpeg-*-win64.zip | sed 's/-win64\.zip$//')
           [ "$tag" = "$GITHUB_REF_NAME" ] || { echo "the tag $GITHUB_REF_NAME does not match what was built ($tag)"; exit 1; }
           gh release create "$tag" --repo "$REPO" --verify-tag --title "$tag" --prerelease \
-            --notes "FFmpeg for AlbaRo Downloader, built by scripts/build-ffmpeg.sh at commit $GITHUB_SHA. LGPL: FFmpeg with libmp3lame, libopus and zlib only. The archives hold BUILDINFO.txt (versions, SHA-256 of the sources, configure line) and the licences. The source of every component is the upstream tarball named there." \
+            --notes "FFmpeg for Alvraco Downloader, built by scripts/build-ffmpeg.sh at commit $GITHUB_SHA. LGPL: FFmpeg with libmp3lame, libopus and zlib only. The archives hold BUILDINFO.txt (versions, SHA-256 of the sources, configure line) and the licences. The source of every component is the upstream tarball named there." \
             ./*

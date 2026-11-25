@@ -1,6 +1,6 @@
 {
   "$schema": "https://schema.tauri.app/config/2",
-  "productName": "AlbaRo Downloader",
+  "productName": "Alvraco Downloader",
   "version": "0.3.2",
   "identifier": "dev.albaro.downloader",
   "build": {
@@ -12,7 +12,7 @@
   "app": {
     "windows": [
       {
-        "title": "AlbaRo Downloader",
+        "title": "Alvraco Downloader",
         "width": 1000,
         "height": 680,
         "minWidth": 760,
@@ -65,7 +65,7 @@
     "updater": {
       "pubkey": "dW50cnVzdGVkIGNvbW1lbnQ6IG1pbmlzaWduIHB1YmxpYyBrZXk6IDlFRThEQzBEOTMzRTJDNUMKUldSY0xENlREZHpvbm5ZMU9FcUs5UW50bnhIVERuR0ZkcysyWUlpbDAvUWhJL0xCMzdTNDI5V1oK",
       "endpoints": [
-        "https://github.com/AlbaRoDev/Albaro-Downloader/releases/latest/download/latest.json"
+        "https://github.com/Alvraco/Alvraco-Downloader/releases/latest/download/latest.json"
       ],
       "requireSignedVersion": true
     }

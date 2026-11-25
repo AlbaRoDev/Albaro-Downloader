@@ -1,4 +1,4 @@
-# AlbaRo Downloader
+# Alvraco Downloader
 
 [English](README.md)
 
@@ -44,7 +44,7 @@ que ninguno está garantizado. El contenido con DRM (Netflix, Prime Video, Spoti
 ## Instalación
 
 Descarga el instalador para tu sistema desde la
-[página de Releases](https://github.com/AlbaRoDev/Albaro-Downloader/releases).
+[página de Releases](https://github.com/Alvraco/Alvraco-Downloader/releases).
 
 | Sistema | Fichero | Estado |
 | --- | --- | --- |
@@ -61,7 +61,7 @@ yt-dlp, FFmpeg y Deno van incluidos: no hay que instalar nada más.
 
 ## Uso responsable
 
-AlbaRo Downloader es una herramienta, y lo que descargues con ella es responsabilidad tuya.
+Alvraco Downloader es una herramienta, y lo que descargues con ella es responsabilidad tuya.
 
 - Descarga solo lo que tengas derecho a descargar: tu propio contenido, contenido con una licencia que lo permita
   (como Creative Commons), obras de dominio público, o copias que puedas hacer para uso personal donde tu
@@ -72,7 +72,7 @@ AlbaRo Downloader es una herramienta, y lo que descargues con ella es responsabi
 - No la uses para sobrecargar un sitio: la app limita su propio ritmo de peticiones y no debes saltarte ese límite.
 
 Los autores no fomentan ni se hacen responsables de ningún mal uso. Esto no es asesoramiento legal. El software se
-ofrece "tal cual", sin garantía de ningún tipo (ver [LICENSE](LICENSE)). AlbaRo Downloader no está afiliado, ni
+ofrece "tal cual", sin garantía de ningún tipo (ver [LICENSE](LICENSE)). Alvraco Downloader no está afiliado, ni
 respaldado ni patrocinado por YouTube, Google ni ningún otro sitio, ni por los proyectos yt-dlp, FFmpeg o Deno.
 Todas las marcas pertenecen a sus dueños.
 
@@ -111,7 +111,7 @@ El stack es Tauri 2 (Rust) con React, TypeScript y Tailwind, y SQLite para la co
 
 ## Licencia
 
-El código de AlbaRo Downloader se publica bajo la [licencia MIT](LICENSE). Los programas y bibliotecas incluidos
+El código de Alvraco Downloader se publica bajo la [licencia MIT](LICENSE). Los programas y bibliotecas incluidos
 mantienen sus propias licencias, listadas en [THIRD_PARTY_NOTICES.txt](THIRD_PARTY_NOTICES.txt). FFmpeg lo compila este proyecto
 ([`scripts/build-ffmpeg.sh`](scripts/build-ffmpeg.sh)) desde el código oficial y solo con bibliotecas compatibles con la
 LGPL (libmp3lame, libopus, zlib), así que `ffmpeg` y `ffprobe` son LGPL. Son programas aparte que puedes sustituir, y su

@@ -984,14 +984,14 @@ pub async fn stop(app: &AppHandle, id: i64, stop: Stop) -> Result<(), AppError> 
     Ok(())
 }
 
-/// `Downloads/AlbaRo Downloader`: where files go until the user picks a folder, and where rows
+/// `Downloads/Alvraco Downloader`: where files go until the user picks a folder, and where rows
 /// queued before the folder was stored went.
 pub fn default_out_dir(app: &AppHandle) -> Result<PathBuf, AppError> {
     let downloads = app
         .path()
         .download_dir()
         .map_err(|e| AppError::Unknown(e.to_string()))?;
-    Ok(downloads.join("AlbaRo Downloader"))
+    Ok(downloads.join("Alvraco Downloader"))
 }
 
 /// The folder and name download `id` was queued with.

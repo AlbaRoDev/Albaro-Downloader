@@ -75,7 +75,7 @@ const HISTORY_LIMIT = 200;
 // The made-up folders the picker alternates between (not real: the mock opens nothing). The second
 // has accents and a long name, to see how the folder button copes.
 export const MOCK_FOLDERS = [
-  "C:\\Mock\\Descargas\\AlbaRo Downloader",
+  "C:\\Mock\\Descargas\\Alvraco Downloader",
   "D:\\Vídeos ñ\\Una carpeta con un nombre de lo más largo y descriptivo",
 ];
 // The made-up cookies files the picker alternates between (not real: the mock opens nothing).

@@ -45,7 +45,7 @@ pub fn run() {
     // The `cfg` keeps it out of release builds.
     #[cfg(all(debug_assertions, not(target_os = "linux")))]
     let builder = builder.plugin(tauri_plugin_mcp::init_with_config(
-        tauri_plugin_mcp::PluginConfig::new("AlbaRo Downloader".to_string())
+        tauri_plugin_mcp::PluginConfig::new("Alvraco Downloader".to_string())
             .start_socket_server(true)
             .tcp_localhost(4000),
     ));

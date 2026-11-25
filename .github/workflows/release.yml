@@ -32,7 +32,7 @@ jobs:
           GH_TOKEN: ${{ github.token }}
         run: |
           gh release create "$GITHUB_REF_NAME" --repo "$GITHUB_REPOSITORY" --verify-tag --draft \
-            --title "AlbaRo Downloader $GITHUB_REF_NAME" --notes "Building..."
+            --title "Alvraco Downloader $GITHUB_REF_NAME" --notes "Building..."
 
   build:
     needs: prepare

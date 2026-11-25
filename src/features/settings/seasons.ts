@@ -1,5 +1,5 @@
 // The themed style changes with the date: the same nine "seasons" as the author's
-// website (albaro.dev), by fixed dates, so the app and the site agree. Special days win over the
+// website (alvraco.dev), by fixed dates, so the app and the site agree. Special days win over the
 // plain seasons. Pure, so a test can try every date.
 
 export const SEASONS = [
