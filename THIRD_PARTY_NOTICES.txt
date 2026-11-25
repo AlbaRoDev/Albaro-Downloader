@@ -12,7 +12,7 @@ linked into the application): yt-dlp, FFmpeg (with ffprobe) and Deno. The texts 
 the versions bundled when this file was generated (see scripts/refresh-notices.mjs).
 
 --------------------------------------------------------------------------------
-yt-dlp 2026.10.26 - Unlicense
+yt-dlp 2026.11.23 - Unlicense
 Source: https://github.com/yt-dlp/yt-dlp
 --------------------------------------------------------------------------------
 This is free and unencumbered software released into the public domain.
@@ -3197,6 +3197,38 @@ DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY
 THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
 (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
 OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+
+
+
+--------------------------------------------------------------------------------
+c-ares | MIT
+Note: Not included in `yt-dlp_x86.exe` Windows builds
+URL: https://c-ares.org/
+--------------------------------------------------------------------------------
+MIT License
+
+Copyright (c) 1998 Massachusetts Institute of Technology
+Copyright (c) 2007 - 2023 Daniel Stenberg with many contributors, see AUTHORS
+file.
+
+Permission is hereby granted, free of charge, to any person obtaining a copy of
+this software and associated documentation files (the "Software"), to deal in
+the Software without restriction, including without limitation the rights to
+use, copy, modify, merge, publish, distribute, sublicense, and/or sell copies of
+the Software, and to permit persons to whom the Software is furnished to do so,
+subject to the following conditions:
+
+The above copyright notice and this permission notice (including the next
+paragraph) shall be included in all copies or substantial portions of the
+Software.
+
+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+SOFTWARE.
 
 
 
